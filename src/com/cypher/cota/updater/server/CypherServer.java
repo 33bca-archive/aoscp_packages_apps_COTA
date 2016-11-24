@@ -38,7 +38,7 @@ public class CypherServer implements Server {
 	
 	private static final String TAG = Constants.BASE_TAG + "CypherServer";
 
-    private static final String URL = "http://get.cypheros.co/updates/%s";
+    private static final String URL = "https://raw.githubusercontent.com/33bca/AOSCPHub-API/master/%s";
 
     private String mDevice = null;
     private String mError = null;
