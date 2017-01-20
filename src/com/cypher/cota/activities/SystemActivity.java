@@ -2,6 +2,7 @@ package com.cypher.cota.activities;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -14,7 +15,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.format.Formatter;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.util.Log;
 
@@ -57,12 +57,18 @@ public class SystemActivity extends AppCompatActivity implements UpdaterListener
     private List<File> mFiles = new ArrayList<>();
 
     private NotificationUtils.NotificationInfo mNotificationInfo;
+    private NotificationUtils mNotifUtils;
+      
+    private Context mContext;
+      
+    protected Context getContext() {
+        return mContext;
+    }
 
     private CoordinatorLayout mCoordinatorLayout;
     private TextView mMessage;
     private Button mButton;
     private TextView mHeader;
-    private ProgressBar mProgress;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,7 +78,6 @@ public class SystemActivity extends AppCompatActivity implements UpdaterListener
         mHeader = (TextView) findViewById(R.id.header);
         mCoordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinatorLayout);
         mMessage = (TextView) findViewById(R.id.message);
-		mProgress = (ProgressBar) findViewById(R.id.progress);
         mButton = (Button) findViewById(R.id.action);
 
         mUpdatePackage = null;
@@ -159,12 +164,6 @@ public class SystemActivity extends AppCompatActivity implements UpdaterListener
         if (mState != STATE_DOWNLOADING) {
             return;
         }
-        mProgress.setMax(max);
-        mProgress.setProgress(progress);
-    }
-	
-    public ProgressBar getProgressBar() {
-        return mProgress;
     }
 
     private void updateMessages(PackageInfo info) {
@@ -196,7 +195,6 @@ public class SystemActivity extends AppCompatActivity implements UpdaterListener
                 mHeader.setText(R.string.downloading_title);
                 mMessage.setText(String.format(getString(R.string.downloading_text), "0%"));
                 mButton.setText(R.string.downloading_cancel);
-                mProgress.setVisibility(View.VISIBLE);
                 Log.v(TAG, "updateMessages:STATE_DOWNLOADING = " + String.format(getString(R.string.downloading_text), "0%"));
                 break;
             case STATE_ERROR:
@@ -286,6 +284,7 @@ public class SystemActivity extends AppCompatActivity implements UpdaterListener
             mState = STATE_INSTALL;
             updateMessages((PackageInfo) null);
             addFile(uri, md5);
+			mNotifUtils.onCompleted(getContext());
         } else {
             mState = STATE_CHECK;
             mRomUpdater.check(true);
